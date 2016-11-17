@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrReportMapper">
+    <sql id="key">
+        <if test="stAtdTime != null">stAtdTime,</if>
+        <if test="endAtdTime != null">endAtdTime,</if>
+        <if test="yChuQin != null">yChuQin,</if>
+        <if test="sChuQin != null">sChuQin,</if>
+        <if test="ps != null">ps,</if>
+        <if test="gx != null">gx,</if>
+        <if test="jr != null">jr,</if>
+        <if test="salaryResult != null">salaryResult,</if>
+        <if test="resultType != null">resultType,</if>
+        <if test="resultName != null">resultName,</if>
+        <if test="leaveHours != null">leaveHours,</if>
+        <if test="kuangGong != null">kuangGong,</if>
+        <if test="late != null">late,</if>
+        <if test="lateMinutes != null">lateMinutes,</if>
+        <if test="early != null">early,</if>
+        <if test="earlyMinutes != null">earlyMinutes,</if>
+        <if test="tripHours != null">tripHours,</if>
+        <if test="sJieRi != null">sJieRi,</if>
+    </sql>
+    <sql id="value">
+        <if test="stAtdTime != null">#{stAtdTime},</if>
+        <if test="endAtdTime != null">#{endAtdTime},</if>
+        <if test="yChuQin != null">#{yChuQin},</if>
+        <if test="sChuQin != null">#{sChuQin},</if>
+        <if test="ps != null">#{ps},</if>
+        <if test="gx != null">#{gx},</if>
+        <if test="jr != null">#{jr},</if>
+        <if test="salaryResult != null">#{salaryResult},</if>
+        <if test="resultType != null">#{resultType},</if>
+        <if test="resultName != null">#{resultName},</if>
+        <if test="leaveHours != null">#{leaveHours},</if>
+        <if test="kuangGong != null">#{kuangGong},</if>
+        <if test="late != null">#{late},</if>
+        <if test="lateMinutes != null">#{lateMinutes},</if>
+        <if test="early != null">#{early},</if>
+        <if test="earlyMinutes != null">#{earlyMinutes},</if>
+        <if test="tripHours != null">#{tripHours},</if>
+        <if test="sJieRi != null">#{sJieRi},</if>
+    </sql>
+    <insert id="add" parameterType="HrReport">
+        INSERT INTO hrreport(<include refid="key"/>empId,deptName,workId,recDate,empName,shiftName,deptId)
+        VALUES (<include refid="value"/>#{empId},#{deptName},#{workId},#{recDate},#{empName},#{shiftName},#{deptId})
+    </insert>
+    <delete id="delete">
+        DELETE FROM hrreport  WHERE empId = #{0} and recDate = #{1}
+    </delete>
+    <select id="getByPo" resultType="com.echo.model.HrReport" parameterType="RecordPagePo">
+        SELECT recDate,empName,shiftName,stAtdtime,endAtdTime,sJieRi,yChuQin,sChuQin,resultName,leaveHours,
+        kuangGong,late,lateMinutes,early,earlyMinutes,ps,gx,jr,tripHours FROM hrreport
+        <where>
+            recDate BETWEEN #{stDate} and #{endDate}
+            <if test="empName != null and empName.trim().length() > 0 ">
+                and empName = #{empName}
+            </if>
+            <if test="deptId != null and deptId.trim().length() > 0 ">
+                and deptId = #{deptId}
+            </if>
+        </where>
+    </select>
+    <select id="getMonthReport" resultType="com.echo.model.HrReport" parameterType="RecordPagePo">
+        SELECT empId,deptName,workId,empName,sum(sJieRi) sJieRi,sum(yChuQin) yChuQin,sum(sChuQin) sChuQin,sum(ps) ps,sum(gx) gx,
+        sum(jr) jr, sum(case when resultType='0401' then leaveHours else 0 end) leaveHours,sum(kuangGong)
+        kuangGong,sum(late) late,sum(lateMinutes) lateMinutes,
+        sum(early) early,sum(earlyMinutes) earlyMinutes,sum(tripHours) tripHours FROM hrreport
+        <where>
+            recDate BETWEEN #{stDate} and #{endDate}
+            <if test="empName != null and empName.trim().length() > 0 ">
+                and empName = #{empName}
+            </if>
+            <if test="deptId != null and deptId.trim().length() > 0 ">
+                and deptId = #{deptId}
+            </if>
+            group by empId
+        </where>
+    </select>
+    <select id="hasReport" resultType="java.lang.Integer">
+        select count(empId) FROM hrreport where empId = #{0} and recDate = #{1}
+    </select>
+</mapper>

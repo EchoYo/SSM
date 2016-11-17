@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrRecLeaveMapper">
+    <insert id="add" parameterType="HrRecLeave">
+        insert into hrrecleave (empId,resultType,stDate,endDate,stTime,endTime,remark,operId,operDate,hours)
+        values (#{empId},#{resultType},#{stDate},#{endDate},#{stTime},#{endTime},#{remark},#{operId},#{operDate},#{hours})
+    </insert>
+    <insert id="saveChangeShifts" parameterType="HrChangeShiftPo">
+        insert into hrrecleave (empId,resultType,stDate,endDate,stTime,endTime,operId,operDate)
+        values (#{empId},'0184',#{stDate},#{endDate},'00:00','24:00',#{operId},#{operDate})
+    </insert>
+    <update id="update" parameterType="HrRecLeave">
+        UPDATE hrrecleave set resultType = #{resultType},stDate = #{stDate},endDate = #{endDate},hours= #{hours},
+        stTime = #{stTime},endTime = #{endTime},remark = #{remark},operId = #{operId},operDate = #{operDate}
+        where id = #{id}
+    </update>
+    <delete id="delete" parameterType="integer">
+        DELETE FROM hrrecleave WHERE id = #{id}
+    </delete>
+    <select id="getByPo" resultType="com.echo.model.HrRecLeaveCustom" parameterType="RecordPagePo">
+        select a.id,a.stDate,a.endDate,a.stTime,a.endTime,a.hours,a.remark,b.workId,b.empName,
+        s.resultName,d.deptName from hrrecleave a,hremp b,hrresulttype s,hrdept d
+        <where>
+            a.empId = b.empId and b.deptId = d.deptId and a.resultType = s.resultType and a.stDate like
+            concat(#{month},'%')
+            <if test="empName.trim().length() > 0">
+                and b.empName = #{empName}
+            </if>
+            <if test="deptId.trim().length() > 0">
+                and b.deptId = #{deptId}
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultType="com.echo.model.HrRecLeaveCustom" parameterType="integer">
+        select a.id,a.stDate,a.endDate,a.stTime,a.endTime,a.hours,a.remark,b.workId,b.empName,a.resultType,b.deptId,
+        c.resultName,d.deptName from hrrecleave a,hremp b,hrresulttype c,hrdept d
+        WHERE a.empId = b.empId and b.deptId = d.deptId and a.resultType = c.resultType and a.id=#{id}
+    </select>
+    <select id="hasDaysOff" resultType="java.lang.Integer">
+        select count(id) from hrrecleave where empId = #{0} and resultType = '0184'
+        and #{1} between stDate and endDate
+    </select>
+    <select id="getByIdAndDate" resultType="com.echo.model.HrRecLeave">
+        SELECT resultType,hours FROM hrrecleave WHERE empId = #{0} and #{1} between stDate and endDate
+        and resultType != '0184'
+    </select>
+    <select id="hasLeave" resultType="java.lang.Integer">
+        select count(id) from hrrecleave where empId = #{0} and resultType != '0184' and resultType != '0407'
+        and #{1} between stDate and endDate
+    </select>
+</mapper>

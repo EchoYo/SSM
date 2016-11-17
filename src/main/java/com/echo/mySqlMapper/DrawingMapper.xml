@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.DrawingMapper">
+    <insert id="add" parameterType="com.echo.model.Drawing">
+        INSERT INTO drawing values (#{id},#{date},#{sampleDrawingEdition},#{customerName},#{customerDrawingName},
+        #{customerDrawingNumber},#{customerDrawingEdition},#{moldDrawingEdition},#{moldDrawingDate},#{formalDrawingEdition},
+        #{formalDrawingDate},#{craftNumber},#{craftEdition},#{craftDate},#{formalMoldDrawingEdition},
+        #{formalMoldDrawingDate},#{remark})
+    </insert>
+    
+    <update id="update" parameterType="com.echo.model.Drawing">
+        UPDATE drawing SET sampleDrawingEdition = #{sampleDrawingEdition},customerName = #{customerName},
+        customerDrawingName = #{customerDrawingName},customerDrawingNumber = #{customerDrawingNumber},
+        customerDrawingEdition = #{customerDrawingEdition},moldDrawingEdition = #{moldDrawingEdition},
+        moldDrawingDate = #{moldDrawingDate},formalDrawingEdition = #{formalDrawingEdition},
+        formalDrawingDate = #{formalDrawingDate},craftNumber = #{craftNumber},craftEdition = #{craftEdition},
+        craftDate = #{craftDate},formalMoldDrawingEdition = #{formalMoldDrawingEdition},
+        formalMoldDrawingDate = #{formalMoldDrawingDate},remark = #{remark} where id = #{id}
+    </update>
+    <select id="findAll" resultType="com.echo.model.Drawing">
+        select * from drawing order by id DESC limit 1000
+    </select>
+    <select id="getById" resultType="com.echo.model.Drawing" parameterType="java.lang.Integer">
+        SELECT * FROM drawing WHERE id = #{id}
+    </select>
+    <!--批量添加-->
+    <insert id="addTrain" parameterType="java.util.List">
+        INSERT INTO drawing values
+        <foreach collection="list" item="drawing" separator=",">
+            (#{drawing.id},#{drawing.date},#{drawing.sampleDrawingEdition},#{drawing.customerName},#{drawing.customerDrawingName},
+            #{drawing.customerDrawingNumber},#{drawing.customerDrawingEdition},#{drawing.moldDrawingEdition},#{drawing.moldDrawingDate},
+            #{drawing.formalDrawingEdition},#{drawing.formalDrawingDate},#{drawing.craftNumber},#{drawing.craftEdition},
+            #{drawing.craftDate},#{drawing.formalMoldDrawingEdition},#{drawing.formalMoldDrawingDate},#{drawing.remark})
+        </foreach>
+    </insert>
+    <!--查询最大ID-->
+    <select id="getMaxId" resultType="java.lang.Long">
+        SELECT max(id) FROM drawing
+    </select>
+</mapper>

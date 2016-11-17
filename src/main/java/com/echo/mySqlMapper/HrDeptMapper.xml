@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrDeptMapper">
+    <insert id="add" parameterType="HrDept">
+        INSERT INTO hrdept (deptId,deptName,phone,parentDeptId) VALUES (#{deptId},#{deptName},#{phone},#{parentDeptId})
+    </insert>
+    <update id="update" parameterType="HrDept">
+        UPDATE hrdept SET deptId = #{deptId},deptName = #{deptName},parentDeptId = #{parentDeptId},phone=#{phone} where id = #{id}
+    </update>
+    <select id="findById" resultType="com.echo.model.HrDept" parameterType="Long">
+        SELECT * FROM hrdept WHERE id = #{id}
+    </select>
+    <select id="findAll" resultType="com.echo.model.HrDept">
+        SELECT * FROM hrdept
+    </select>
+</mapper>

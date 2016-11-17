@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrRecOverMapper">
+    <insert id="add" parameterType="HrRecOver">
+    insert into hrrecover (empId,resultType,recDate,stTime,endTime,operId,operDate,hours)
+    values (#{empId},#{resultType},#{recDate},#{stTime},#{endTime},#{operId},#{operDate},#{hours})
+    </insert>
+    <update id="update" parameterType="HrRecOver">
+        UPDATE hrrecover set resultType = #{resultType},recDate = #{recDate},hours= #{hours},
+        stTime = #{stTime},endTime = #{endTime},remark = #{remark},operId = #{operId},operDate = #{operDate}
+        where id = #{id}
+    </update>
+    <delete id="delete" parameterType="integer">
+        DELETE FROM hrrecover WHERE id = #{id}
+    </delete>
+    <select id="getByPo" resultType="com.echo.model.HrRecOverCustom" parameterType="RecordPagePo">
+        select a.id,a.recDate,a.stTime,a.endTime,a.hours,a.remark,b.workId,b.empName,a.operId,a.operDate,
+        s.resultName,d.deptName from hrrecover a,hremp b,hrresulttype s,hrdept d
+        <where>
+            a.empId = b.empId and b.deptId = d.deptId and a.resultType = s.resultType and a.recDate like
+            concat(#{month},'%')
+            <if test="empName.trim().length() > 0">
+                and b.empName = #{empName}
+            </if>
+            <if test="deptId.trim().length() > 0">
+                and b.deptId = #{deptId}
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultType="com.echo.model.HrRecOverCustom" parameterType="integer">
+        select a.id,a.recDate,a.stTime,a.endTime,a.hours,a.remark,b.workId,b.empName,a.resultType,b.deptId,
+        c.resultName,d.deptName from hrrecover a,hremp b,hrresulttype c,hrdept d
+        WHERE a.empId = b.empId and b.deptId = d.deptId and a.resultType = c.resultType and a.id=#{id}
+    </select>
+    <select id="getOverHours" resultType="java.lang.String">
+        SELECT hours FROM hrrecover WHERE empId = #{0} and recDate = #{1}
+    </select>
+
+</mapper>

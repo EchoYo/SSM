@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.sqlMapper.WXMapper">
+    <resultMap id="wxMap" type="WX">
+        <id property="id" column="ID" jdbcType="INTEGER"/>
+        <result property="start_date" column="START_DATE" jdbcType="TIMESTAMP"/>
+        <result property="exp_date" column="EXP_DATE" jdbcType="VARCHAR"/>
+        <result property="start_date_code" column="START_DATE_CODE" jdbcType="VARCHAR"/>
+        <result property="month" column="MONTH" jdbcType="INTEGER"/>
+        <result property="qyt" column="QYT" jdbcType="VARCHAR"/>
+        <result property="order_id" column="ORDER_ID" jdbcType="VARCHAR"/>
+        <result property="item_no" column="ITEM_NO" jdbcType="VARCHAR"/>
+        <result property="build_no" column="BUILD_NO" jdbcType="VARCHAR"/>
+        <result property="coocn" column="COOCN" jdbcType="VARCHAR"/>
+        <result property="type_id" column="TYPE_ID" jdbcType="VARCHAR"/>
+        <result property="start_date_str" column="START_DATE_STR" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="save" parameterType="WX">
+        insert into WX_BARCODE (start_date,exp_date,start_date_code,month,
+        qyt,order_id,item_no,build_no,coocn,type_id,start_date_str)values
+        (getdate(),#{exp_date},#{start_date_code},#{month},#{qyt},
+        #{order_id},#{item_no},#{build_no},#{coocn},#{type_id},#{start_date_str})
+    </insert>
+    <update id="update" parameterType="WX">
+        UPDATE WX_BARCODE SET start_date = getdate(),exp_date = #{exp_date},start_date_code =#{start_date_code},
+        month = #{month},qyt = #{qyt},order_id = #{order_id},item_no = #{item_no},build_no = #{build_no},coocn = #{coocn},
+        type_id = #{type_id},start_date_str = #{start_date_str} where id = #{id}
+    </update>
+
+    <select id="findAll" resultMap="wxMap">
+        select * FROM WX_BARCODE
+    </select>
+    <select id="getById" resultMap="wxMap" parameterType="java.lang.Integer">
+        select * from WX_BARCODE where id = #{id}
+    </select>
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrRecordMapper">
+    <resultMap id="recordMap" type="com.echo.model.HrRecord">
+        <id property="id" column="id"/>
+        <result property="empId" column="empId"/>
+        <result property="equNo" column="equNo"/>
+        <result property="cardId" column="cardId"/>
+        <result property="recTime" column="recTime"/>
+        <result property="recDate" column="recDate"/>
+    </resultMap>
+    <resultMap id="recTimes" type="com.echo.model.HrRecordCustom">
+        <id property="id" column="id"/>
+        <result property="workId" column="workId"/>
+        <result property="empName" column="empName"/>
+        <result property="recDate" column="recDate"/>
+        <result property="recTime1" column="recTime"/>
+        <result property="operId" column="operId"/>
+        <result property="operDate" column="operDate"/>
+    </resultMap>
+    <sql id="key">
+        <if test="cardId != null">cardId,</if>
+        <if test="operId != null">operId,</if>
+        <if test="operDate != null">operDate,</if>
+    </sql>
+    <sql id="value">
+        <if test="cardId != null">#{cardId},</if>
+        <if test="operId != null">#{operId},</if>
+        <if test="operDate != null">#{operDate},</if>
+    </sql>
+    <insert id="add" parameterType="HrRecord">
+        INSERT INTO hrrecord (<include refid="key"/>id,empId,recDate,recTime,equNo) VALUES
+        (<include refid="value"/>#{id},#{empId},#{recDate},#{recTime},#{equNo})
+    </insert>
+    <insert id="addRawList" parameterType="java.util.List">
+        INSERT INTO hrrecord (id,empId,recDate,recTime,cardId,operId,operDate,equNo) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id},#{item.empId},#{item.recDate},#{item.recTime},#{item.cardId},
+            #{item.operId},#{item.operDate},#{item.equNo})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="integer" >
+        DELETE FROM hrrecord WHERE id = #{id}
+    </delete>
+    <select id="getByDate" resultType="com.echo.model.HrRecord" parameterType="String">
+        SELECT * FROM hrrecord WHERE recDate = #{date}
+    </select>
+    <select id="getByIdAndDate" resultType="String">
+        SELECT recTime FROM hrrecord WHERE empId = #{0} and recDate = #{1}
+    </select>
+    <select id="finMaxId" resultType="java.lang.Integer">
+        SELECT MAX(Id) FROM  hrrecord
+    </select>
+    <select id="getMonths" resultType="java.lang.String">
+        select left(recDate,7)month from hrrecord group by left(recDate,7) order by month DESC
+    </select>
+    <select id="getRecTimesOfMonth" resultMap="recTimes" parameterType="RecordPagePo">
+        select a.id,a.recDate,a.recTime,b.empName,b.workId,a.operId,a.operDate from hrrecord a
+        left join hremp b on a.empId = b.empId
+        <where>
+            a.equNo = '000' and a.recDate like concat(#{month},'%')
+            <if test="empName != null and empName.trim().length() > 0">
+               and b.empName = #{empName}
+            </if>
+            <if test="deptId != null and deptId.trim().length() > 0">
+               and b.deptId = #{deptId}
+            </if>
+        </where>
+    </select>
+</mapper>

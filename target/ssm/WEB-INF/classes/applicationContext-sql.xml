@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       <!--导入数据源文件-->
+       <context:property-placeholder location="classpath:db.properties"/>
+       <!--配置mysql的c3p0数据源-->
+       <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="sqlds">
+              <property value="${sql.jdbc.url}" name="jdbcUrl"/>
+              <property value="${sql.jdbc.username}" name="user"/>
+              <property value="${sql.jdbc.password}" name="password"/>
+              <property value="${sql.jdbc.driverClass}" name="driverClass"/>
+              <property value="${jdbc.initPoolSize}" name="initialPoolSize"/>
+              <property value="${jdbc.minPoolSize}" name="minPoolSize"/>
+              <property value="${jdbc.maxPoolSize}" name="maxPoolSize"/>
+              <property value="${jdbc.acquireIncrement}" name="acquireIncrement"/>
+              <property value="${jdbc.maxIdleTime}" name="maxIdleTime"/>
+              <property value="${jdbc.acquireRetryAttempts}" name="acquireRetryAttempts"/>
+              <property value="${jdbc.acquireRetryDelay}" name="acquireRetryDelay"/>
+              <property value="true" name="testConnectionOnCheckin"/>
+              <property value="${jdbc.idleConnectionTestPeriod}" name="idleConnectionTestPeriod"/>
+       </bean>
+       <!--mySqlSessionFactory-->
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+              <!--加载mybatis的配置文件-->
+              <property name="configLocation" value="classpath:myBatis-config.xml"/>
+              <!--加载mapper文件-->
+              <property name="mapperLocations" value="classpath*:com/echo/sqlMapper/*.xml"/>
+              <!--数据源-->
+              <property name="dataSource" ref="sqlds"/>
+       </bean>
+       <!--mapper扫描器mysql-->
+       <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+              <!--扫描包路径，如果有多个包中间使用,隔开-->
+              <property name="basePackage" value="com.echo.sqlMapper"/>
+              <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+              <!--<property name="annotationClass" value="com.jiutai.order.annotation.MyBatisRepository"/>-->
+       </bean>
+</beans>

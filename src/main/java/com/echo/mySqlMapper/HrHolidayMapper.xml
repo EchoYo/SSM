@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrHolidayMapper">
+    <select id="count" resultType="java.lang.Integer" parameterType="string">
+        SELECT count(id) FROM hrholiday WHERE startDate LIKE concat(#{month},'%') or endDate like concat(#{month},'%')
+    </select>
+    <select id="inHoliday" resultType="java.lang.Integer" parameterType="string">
+        SELECT COUNT(id) FROM  hrholiday WHERE #{date} between startDate and endDate
+    </select>
+    <select id="getHolidays" resultType="com.echo.model.HrHoliday" parameterType="string">
+        select holidayId,startDate,endDate from hrholiday where startDate LIKE concat(#{month},'%') or endDate like concat(#{month},'%')
+    </select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.hrSqlMapper.AtdRecordMapper">
+    <resultMap id="recordMap" type="com.echo.model.HrRecord">
+        <id property="id" column="SerialId"/>
+        <result property="empId" column="EmplId"/>
+        <result property="recDate" column="RecDate"/>
+        <result property="recTime" column="RecTime"/>
+        <result property="cardId" column="CardNo"/>
+        <result property="equNo" column="EquNo"/>
+        <result property="operId" column="OperId"/>
+        <result property="operDate" column="OperDate"/>
+    </resultMap>
+    <insert id="add" parameterType="HrRecord">
+        set identity_insert AtdRecord ON
+        insert into AtdRecord (SerialId,EmplId,RecDate,RecTime,EquNo,isAuto,OperId,OperDate)
+        VALUES (#{id},#{empId},#{recDate},#{recTime},#{equNo},'0',#{operId},#{operDate})
+        set identity_insert AtdRecord OFF
+    </insert>
+    <delete id="delete" parameterType="integer">
+        delete FROM AtdRecord WHERE SerialId = #{id}
+    </delete>
+    <select id="getNewDatas" resultMap="recordMap">
+        SELECT SerialId,EmplId,RecDate,RecTime,CardNo,EquNo,OperId,OperDate FROM AtdRecord WHERE SerialId BETWEEN #{0} and #{1}
+    </select>
+    <select id="findData" resultType="java.lang.Integer" parameterType="String">
+        SELECT count(RecDate) FROM AtdRecord WHERE RecDate = #{recDate}
+    </select>
+    <select id="getByDate" resultMap="recordMap" parameterType="String">
+        SELECT SerialId,EmplId,RecDate,RecTime,CardNo,EquNo FROM AtdRecord WHERE RecDate = #{date}
+    </select>
+    <select id="findMaxId" resultType="java.lang.Integer">
+        SELECT MAX(SerialId) from AtdRecord
+    </select>
+    <select id="getById" resultMap="recordMap" parameterType="integer">
+        SELECT SerialId,EmplId,RecDate,RecTime,CardNo,EquNo FROM AtdRecord WHERE SerialId = #{id}
+    </select>
+</mapper>

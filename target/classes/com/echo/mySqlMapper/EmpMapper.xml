@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.EmpMapper">
+    <!--&lt;!&ndash;开启二级缓存,如果缓存不是存在内存中要对pojo类实现序列化接口  implements Serializable&ndash;&gt;-->
+    <!--<cache/>-->
+
+    <resultMap id="CustomMap" type="EmpCustom">
+        <id property="id" column="emp.empId"/>
+        <result property="deptName" column="deptName"/>
+        <result property="teamName" column="teamName"/>
+        <result property="cpfName" column="cpfName"/>
+        <result property="shiftName" column="shiftName"/>
+        <result property="educationName" column="educationName"/>
+        <result property="natureName" column="natureName"/>
+        <association property="emp" javaType="Emp">
+            <id property="empId" column="empId"/>
+            <result property="workId" column="workId"/>
+            <result property="cardId" column="cardId"/>
+            <result property="deptId" column="deptId"/>
+            <result property="empName" column="empName"/>
+            <result property="sex" column="sex"/>
+            <result property="identityId" column="identityId"/>
+            <result property="birthday" column="birthday"/>
+            <result property="teamId" column="teamId"/>
+            <result property="shiftId" column="shiftId"/>
+            <result property="education" column="education"/>
+            <result property="postName" column="postName"/>
+            <result property="cpfId" column="cpfId"/>
+            <result property="insurance" column="insurance"/>
+            <result property="entryDate" column="entryDate"/>
+            <result property="leaveDate" column="leaveDate"/>
+            <result property="leaveYN" column="leaveYN"/>
+            <result property="homeAddress" column="homeAddress"/>
+            <result property="tmpAddress" column="tmpAddress"/>
+            <result property="formalDate" column="formalDate"/>
+            <result property="phone" column="phone"/>
+            <result property="remarks" column="remarks"/>
+            <result property="natureId" column="natureId"/>
+            <result property="contractStart" column="contractStart"/>
+            <result property="contractEnd" column="contractEnd"/>
+            <result property="contractPath" column="contractPath"/>
+        </association>
+    </resultMap>
+    <resultMap id="rsMap" type="HrRecordCustom">
+        <id property="empId" column="empId"/>
+        <result property="empName" column="empName"/>
+        <result property="workId" column="workId"/>
+        <result property="cardId" column="cardId"/>
+        <result property="deptName" column="deptName"/>
+    </resultMap>
+    <resultMap id="excelMap" type="Emp">
+        <id property="empId" column="empId"/>
+        <result property="workId" column="workId"/>
+        <result property="deptId" column="deptName"/>
+        <result property="empName" column="empName"/>
+        <result property="sex" column="sex"/>
+        <result property="identityId" column="identityName"/>
+        <result property="education" column="educationName"/>
+        <result property="postName" column="postName"/>
+        <result property="cpfId" column="cpfName"/>
+        <result property="entryDate" column="entryDate"/>
+        <result property="leaveDate" column="leaveDate"/>
+        <result property="homeAddress" column="homeAddress"/>
+        <result property="tmpAddress" column="tmpAddress"/>
+        <result property="phone" column="phone"/>
+        <result property="remarks" column="remarks"/>
+        <result property="natureId" column="natureName"/>
+        <result property="contractStart" column="contractStart"/>
+        <result property="contractEnd" column="contractEnd"/>
+    </resultMap>
+    <insert id="add" parameterType="Emp">
+        INSERT INTO hremp (
+        <if test="cardId != null">
+            cardId,
+        </if>
+        empId,workId,deptId,empName,sex,identityId,birthday,teamId,shiftId,education,
+        postName,cpfId,insurance,entryDate,leaveDate,homeAddress,tmpAddress,formalDate,phone,remarks,
+        natureId,contractStart,contractEnd,contractPath)
+        VALUES (
+        <if test="cardId != null">
+            #{cardId},
+        </if>
+        #{empId},#{workId},#{deptId},#{empName},#{sex},#{identityId},
+        #{birthday},#{teamId},#{shiftId},#{education},#{postName},#{cpfId},#{insurance},#{entryDate},#{leaveDate},
+        #{homeAddress},#{tmpAddress},#{formalDate},#{phone},#{remarks},#{natureId},#{contractStart},#{contractEnd},
+        #{contractPath})
+    </insert>
+    <insert id="addTrain" parameterType="java.util.List">
+        INSERT INTO hremp (empId,workId,natureId,empName,sex,identityId,education,deptId,postName,
+        cpfId,entryDate,leaveDate,contractStart,contractEnd,tmpAddress,homeAddress,phone,leaveYN) VALUES
+        <foreach collection="list" item="emp" separator=",">
+            (#{emp.empId},#{emp.workId},#{emp.natureId},#{emp.empName},#{emp.sex},#{emp.identityId},#{emp.education},
+            #{emp.deptId},#{emp.postName},#{emp.cpfId},#{emp.entryDate},#{emp.leaveDate},#{emp.contractStart},
+            #{emp.contractEnd},#{emp.tmpAddress},#{emp.homeAddress},#{emp.phone}, #{emp.leaveYN})
+        </foreach>
+    </insert>
+    <update id="update" parameterType="Emp">
+        update hremp SET
+        <if test="cardId != null">
+            cardId=#{cardId},
+        </if>
+        workId=#{workId},deptId=#{deptId},empName=#{empName},sex=#{sex},
+        identityId=#{identityId},birthday=#{birthday},teamId=#{teamId},shiftId=#{shiftId},education=#{education},
+        postName=#{postName},cpfId=#{cpfId},insurance=#{insurance},entryDate=#{entryDate},leaveDate=#{leaveDate},
+        homeAddress=#{homeAddress},tmpAddress=#{tmpAddress},formalDate=#{formalDate},phone=#{phone},
+        remarks=#{remarks},natureId=#{natureId},contractStart=#{contractStart},contractEnd=#{contractEnd},
+        contractPath=#{contractPath},leaveYN=#{leaveYN} where empId = #{empId}
+    </update>
+    <delete id="delete" parameterType="Emp">
+        DELETE FROM hremp
+        <trim prefix="where" prefixOverrides="and">
+            <if test="empId != null">
+                and empId = #{empId}
+            </if>
+            <if test="workId != null">
+                and workId = #{workId}
+            </if>
+        </trim>
+    </delete>
+    <select id="getEmp" resultType="com.echo.model.Emp">
+        SELECT * FROM hremp
+        <trim prefix="where" prefixOverrides="and">
+            <if test="empId != null">
+                and empId = #{empId}
+            </if>
+            <if test="workId != null">
+                and workId = #{workId}
+            </if>
+        </trim>
+    </select>
+    <select id="findAll" resultType="com.echo.model.Emp">
+        select * from hremp
+    </select>
+    <select id="findListCustom" resultMap="CustomMap">
+        select hremp.*,hrdept.deptName,hrcpf.cpfName,hrteam.teamName,hrnature.natureName,hreducation.educationName,hrshift.shiftName
+        from hremp
+        left join hrdept on hremp.deptId = hrdept.deptId
+        left join hrcpf on hremp.cpfId = hrcpf.cpfId
+        left join hrteam on hremp.teamId = hrteam.teamId
+        left join hrnature on hremp.natureId = hrnature.natureId
+        left join hreducation on hremp.education = hreducation.educationId
+        left join hrshift on hremp.shiftId = hrshift.shiftId
+        where hremp.leaveYN = 'N'
+    </select>
+    <select id="getMaxEmpId" resultType="java.lang.String">
+        select max(empId) from hremp
+    </select>
+    <select id="findLeaveCustom" resultMap="CustomMap">
+      select  hremp.*,hrdept.deptName,hrcpf.cpfName,hrteam.teamName,hrnature.natureName,hreducation.educationName,hrshift.shiftName
+        from hremp
+        left join hrdept on hremp.deptId = hrdept.deptId
+        left join hrcpf on hremp.cpfId = hrcpf.cpfId
+        left join hrteam on hremp.teamId = hrteam.teamId
+        left join hrnature on hremp.natureId = hrnature.natureId
+        left join hreducation on hremp.education = hreducation.educationId
+        left join hrshift on hremp.shiftId = hrshift.shiftId
+        where hremp.leaveYN = 'Y'
+    </select>
+    <select id="getEmpCustom" resultMap="CustomMap" parameterType="String">
+      select  hremp.*,hrdept.deptName,hrcpf.cpfName,hrteam.teamName,hrnature.natureName,hreducation.educationName,hrshift.shiftName
+        from hremp
+        left join hrdept on hremp.deptId = hrdept.deptId
+        left join hrcpf on hremp.cpfId = hrcpf.cpfId
+        left join hrteam on hremp.teamId = hrteam.teamId
+        left join hrnature on hremp.natureId = hrnature.natureId
+        left join hreducation on hremp.education = hreducation.educationId
+        left join hrshift on hremp.shiftId = hrshift.shiftId
+        where hremp.empId = #{empId}
+    </select>
+    <select id="LeaveCustomOfMonth" resultMap="CustomMap" parameterType="RecordPagePo">
+        select hremp.empId,hremp.empName,hremp.workId,hrdept.deptName
+        from hremp
+        left join hrdept on hremp.deptId = hrdept.deptId
+        <where>
+            (hremp.leaveYN = 'N' or hremp.leaveDate LIKE concat(#{month},'%'))
+            <if test="deptId.trim().length() > 0">
+                and hremp.deptId = #{deptId}
+            </if>
+            <if test="empName.trim().length() > 0">
+                and hremp.empName = #{empName}
+            </if>
+            and hremp.cardId is not null
+        </where>
+    </select>
+    <select id="RecordCustomOfDate" resultMap="rsMap" parameterType="RecordPagePo">
+        select hremp.empId,hremp.empName,hremp.workId,hremp.cardId,hrdept.deptName
+        FROM hremp
+        left join hrdept on hremp.deptId = hrdept.deptId
+        <where>
+            (hremp.leaveYN = 'N' or hremp.leaveDate >= #{stDate})
+            <if test="deptId.trim().length() > 0">
+                and hremp.deptId = #{deptId}
+            </if>
+            <if test="empName.trim().length() > 0">
+                and hremp.empName = #{empName}
+            </if>
+            and hremp.cardId is not null and #{endDate} >= hremp.entryDate
+        </where>
+    </select>
+    <select id="getEmpRec" resultType="com.echo.model.EmpRec">
+        select empId,workId,empName FROM hremp WHERE cardId is not null AND leaveYN = 'N' or leaveDate BETWEEN #{0} and #{1}
+</select>
+    <select id="getEmpForShift" resultType="com.echo.model.HrRecShiftVo" parameterType="String">
+        SELECT empId,shiftId FROM hremp WHERE cardId is not null and leaveYN = 'N' or leaveDate LIKE concat(#{month},'%')
+    </select>
+    <select id="getRecShiftCustom" resultType="com.echo.model.HrRecShiftCustom" parameterType="RecordPagePo">
+        select hremp.empId,hremp.empName,hremp.workId,hrdept.deptName
+        from hremp
+        left join hrdept on hremp.deptId = hrdept.deptId
+        <where>
+            hremp.cardId is not null and (hremp.leaveYN = 'N' or hremp.leaveDate LIKE concat(#{month},'%'))
+            <if test="deptId.trim().length() > 0">
+                and hremp.deptId = #{deptId}
+            </if>
+            <if test="empName.trim().length() > 0">
+                and hremp.empName = #{empName}
+            </if>
+        </where>
+    </select>
+    <select id="getForReport" resultType="com.echo.model.EmpTempForReport" parameterType="string">
+        SELECT a.empName,a.workId,b.deptName,a.deptId,a.leaveDate,a.entryDate FROM hremp a,hrdept b WHERE a.cardId is not null
+        and a.deptId = b.deptId and a.empId = #{empId}
+    </select>
+    <select id="forReportFully" resultType="com.echo.model.EmpRec" parameterType="com.echo.model.RecordPagePo">
+        SELECT a.empId,a.empName,a.workId FROM hremp a
+        <where>
+            (a.leaveYN = 'N' or a.leaveDate >= #{stDate})
+            <if test="deptId != null and deptId.trim().length() > 0">
+                and a.deptId = #{deptId}
+            </if>
+            <if test="empName != null and empName.trim().length() > 0 ">
+                and a.empName = #{empName}
+            </if>
+            and a.cardId is not null
+        </where>
+    </select>
+    <select id="EmpForDownLoad" resultMap="excelMap" parameterType="string">
+      select a.workId,a.cardId,b.deptName,a.empName,a.sex,a.identityId,c.educationName,a.postName,d.cpfName,a.entryDate,a.leaveDate,
+      a.homeAddress,a.tmpAddress,a.phone,a.remarks,e.natureName,a.contractStart,a.contractEnd from hremp a left outer join
+      hrcpf d on a.cpfId = d.cpfId,hrdept b,hreducation c,hrnature e where a.deptId = b.deptId and a.education = c.educationId
+      and a.natureId = e.natureId and a.leaveYN = #{leaveYN}
+    </select>
+    <select id="getForOver" resultType="com.echo.model.EmpRec" parameterType="string">
+        select hremp.empId,hremp.empName,hremp.workId,hrdept.deptName
+        from hremp
+        left join hrdept on hremp.deptId = hrdept.deptId where hremp.cardId is not null and
+        (hremp.leaveYN = 'N' or hremp.leaveDate LIKE concat(#{month},'%'))
+    </select>
+</mapper>

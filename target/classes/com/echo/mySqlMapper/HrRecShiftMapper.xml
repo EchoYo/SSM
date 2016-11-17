@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.HrRecShiftMapper">
+    <resultMap id="monthMap" type="HrRecShiftCustom">
+        <id property="id" column="id"/>
+        <result property="empId" column="empId"/>
+        <result property="empName" column="empName"/>
+        <result property="shiftId" column="shiftId"/>
+        <result property="shiftName" column="shiftName"/>
+        <result property="stDate" column="stDate"/>
+        <result property="workId" column="workId"/>
+    </resultMap>
+    <insert id="add" parameterType="HrRecShift">
+        insert into hrrecshift(empId,stDate,shiftId)VALUES(#{empId},#{stDate},#{shiftId})
+    </insert>
+    <update id="update" parameterType="HrRecShift">
+        UPDATE hrrecshift SET shiftId = #{shiftId} where empId = #{empId} and stDate = #{stDate}
+    </update>
+    <update id="updateList">
+        UPDATE hrrecshift SET shiftId = #{shiftId}
+        <where>
+            <foreach collection="empIds" item="empId" separator="or">
+                <foreach collection="dates" item="stDate" separator="or">
+                    empId = #{empId} and stDate = #{stDate}
+                </foreach>
+            </foreach>
+        </where>
+    </update>
+    <delete id="delete" parameterType="HrRecShift">
+        DELETE FROM hrrecshift WHERE empId = #{empId} and stDate = #{stDate}
+    </delete>
+    <select id="count" resultType="java.lang.Integer">
+        select count(shiftId) from hrrecshift where empId = #{0} and stDate = #{1}
+    </select>
+    <select id="findShiftNameOfMonth" resultType="java.lang.String">
+        select b.shiftName from hrrecshift a,hrshift b
+        where a.shiftId = b.shiftId and a.empId = #{0} and a.stDate = #{1}
+    </select>
+    <select id="getByIdAndDate" resultType="com.echo.model.HrShift">
+        SELECT b.shiftId,b.shiftName FROM hrrecshift a,hrshift b WHERE a.shiftId = b.shiftId
+        AND empId = #{0} and stDate = #{1}
+    </select>
+    <select id="getAllShift" resultType="com.echo.model.HrShift">
+        select shiftId,shiftName FROM hrshift
+    </select>
+</mapper>

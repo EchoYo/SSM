@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+       <!--导入数据源文件-->
+       <context:property-placeholder location="classpath:db.properties"/>
+       <!--配置mysql的c3p0数据源-->
+       <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="ds">
+              <property value="${jdbc.url}" name="jdbcUrl"/>
+              <property value="${jdbc.username}" name="user"/>
+              <property value="${jdbc.password}" name="password"/>
+              <property value="${jdbc.driverClass}" name="driverClass"/>
+              <property value="${jdbc.initPoolSize}" name="initialPoolSize"/>
+              <property value="${jdbc.minPoolSize}" name="minPoolSize"/>
+              <property value="${jdbc.maxPoolSize}" name="maxPoolSize"/>
+              <property value="${jdbc.acquireIncrement}" name="acquireIncrement"/>
+              <property value="${jdbc.maxIdleTime}" name="maxIdleTime"/>
+              <property value="${jdbc.acquireRetryAttempts}" name="acquireRetryAttempts"/>
+              <property value="${jdbc.acquireRetryDelay}" name="acquireRetryDelay"/>
+              <property value="true" name="testConnectionOnCheckin"/>
+              <property value="${jdbc.idleConnectionTestPeriod}" name="idleConnectionTestPeriod"/>
+       </bean>
+       <!--mySqlSessionFactory-->
+       <bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+              <!--加载mybatis的配置文件-->
+              <property name="configLocation" value="classpath:myBatis-config.xml"/>
+              <!--加载mapper文件-->
+              <property name="mapperLocations" value="classpath*:com/echo/mySqlMapper/*.xml"/>
+              <!--数据源-->
+              <property name="dataSource" ref="ds"/>
+       </bean>
+       <!--mapper扫描器mysql-->
+       <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+              <!--扫描包路径，如果有多个包中间使用,隔开-->
+              <property name="basePackage" value="com.echo.mySqlMapper"/>
+              <property name="sqlSessionFactoryBeanName" value="mySqlSessionFactory"/>
+              <!--<property name="annotationClass" value="com.jiutai.order.annotation.MyBatisRepository"/>-->
+       </bean>
+
+       <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+              <property name="dataSource" ref="ds" />
+       </bean>
+       <!-- spring declarative transaction management -->
+       <aop:config>
+              <aop:pointcut id="fooServiceMethods"
+                            expression="execution(* com.echo.*.service.impl.*.*(..))"/>
+              <aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceMethods"/>
+       </aop:config>
+       <tx:advice id="txAdvice" transaction-manager="txManager">
+              <tx:attributes>
+                     <tx:method name="find*" read-only="true"/>
+                     <tx:method name="load*" read-only="true"/>
+                     <tx:method name="*" rollback-for="CustomException"/>
+              </tx:attributes>
+       </tx:advice>
+</beans>

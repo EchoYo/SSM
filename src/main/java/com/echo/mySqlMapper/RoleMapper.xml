@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.mySqlMapper.RoleMapper">
+    <resultMap id="getPrivilegeMap" type="Role">
+        <id property="roleId" column="roleId"/>
+        <result property="privilegeId" column="privilegeId"/>
+        <result property="name" column="name"/>
+        <association property="privilege" javaType="Privilege">
+            <id property="privilegeId" column="privilegeId"/>
+            <result property="name" column="name"/>
+            <result property="parentId" column="parentId"/>
+            <result property="url" column="url"/>
+            <result property="spanClass" column="spanClass"/>
+        </association>
+    </resultMap>
+    <select id="getByPrivilegeId" resultType="com.echo.model.Privilege" parameterType="Role">
+          select p.privilegeId,p.name,p.parentId,p.url,p.spanClass from role r,privilege p where
+          r.privilegeId = p.privilegeId and r.roleId = #{roleId} and p.privilegeId = #{privilegeId}
+    </select>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.hrSqlMapper.HrEmployeeMapper">
+    <insert id="add" parameterType="Emp">
+        insert into HrEmployee (EmplID,CardID,EmplName,WorkID,DeptID,ShiftID) VALUES
+        (#{empId},#{cardId},#{empName},#{workId},#{deptId},#{shiftId})
+    </insert>
+    <update id="update" parameterType="Emp">
+        UPDATE HrEmployee SET CardID = #{cardId},WorkID = #{workId},EmplName = #{empName} where EmplID = #{empId}
+    </update>
+    <select id="countOfId" resultType="java.lang.Integer" parameterType="string">
+        SELECT COUNT (EmplID) FROM HrEmployee WHERE EmplID = #{id}
+    </select>
+</mapper>

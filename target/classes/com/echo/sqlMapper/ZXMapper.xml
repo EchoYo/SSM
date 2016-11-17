@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.echo.sqlMapper.ZXMapper">
+    <resultMap id="zxMap" type="ZX">
+        <id property="serial_no" column="serial_no" jdbcType="INTEGER"/>
+        <result property="start_date" column="start_date" jdbcType="TIMESTAMP"/>
+        <result property="exp_date" column="exp_date" jdbcType="VARCHAR"/>
+        <result property="mat_lot" column="mat_lot" jdbcType="VARCHAR"/>
+        <result property="qty" column="qty" jdbcType="VARCHAR"/>
+        <result property="barcode" column="barcode" jdbcType="VARCHAR"/>
+        <result property="month" column="month" jdbcType="INTEGER"/>
+        <result property="qty_str" column="qty_str" jdbcType="VARCHAR"/>
+        <result property="mat_code" column="mat_code" jdbcType="VARCHAR"/>
+        <result property="batch" column="batch" jdbcType="CHAR"/>
+        <result property="type_id" column="type_id" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="save" parameterType="com.echo.model.ZX">
+        INSERT INTO ZX_BARCODE (start_date,exp_date,mat_lot,qty,barcode,month,qty_str,type_id,mat_code,
+        batch)values(getdate(),#{exp_date},#{mat_lot},#{qty},#{barcode},#{month},#{qty_str},
+        #{type_id},#{mat_code},#{batch})
+    </insert>
+    <update id="update" parameterType="com.echo.model.ZX">
+        UPDATE ZX_BARCODE SET start_date = getdate(),exp_date = #{exp_date},mat_lot = #{mat_lot},qty = #{qty},
+        barcode = #{barcode},month = #{month},qty_str = #{qty_str},type_id = #{type_id},mat_code = #{mat_code},
+        batch = #{batch} WHERE serial_no = #{serial_no}
+    </update>
+    <select id="getById" resultMap="zxMap" parameterType="java.lang.Integer">
+        SELECT * FROM ZX_BARCODE WHERE serial_no = #{serial_no}
+    </select>
+    <select id="findAll" resultMap="zxMap">
+        SELECT * FROM ZX_BARCODE
+    </select>
+</mapper>
